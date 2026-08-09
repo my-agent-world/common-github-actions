@@ -18,6 +18,7 @@ Callers must pin this repository to a release tag or commit SHA, never a moving 
 - `npm-release.yml`: Run a standardized locked-install, verification, and release flow on a caller-selected trigger.
 - `kustomize-validate.yml`: Render Kustomize without cluster access.
 - `node-ci.yml`: Install locked Node dependencies and run one repository verification command.
+- `node-platform-ci.yml`: Standard Node CI shape for macOS/other platform runners with platform-specific gates.
 - `gitops-policy.yml`: Reject direct Kubernetes mutation commands in workflows.
 - `validate-workflows.yml`: Lint workflow syntax with actionlint.
 
