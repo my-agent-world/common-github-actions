@@ -1,0 +1,26 @@
+name: common-gitops-policy
+
+on:
+  workflow_call:
+    inputs:
+      workflow-directory:
+        required: false
+        type: string
+        default: .github/workflows
+
+permissions:
+  contents: read
+
+jobs:
+  policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reject direct Kubernetes mutations
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RInE '(^|[[:space:]])kubectl[[:space:]]+(apply|create|delete|patch|replace|rollout[[:space:]]+(restart|undo)|exec|run)|(^|[[:space:]])helm[[:space:]]+(install|upgrade|uninstall)|argocd[[:space:]]+(app[[:space:]]+sync|app[[:space:]]+delete)' "${{ inputs.workflow-directory }}"; then
+            echo 'Direct Kubernetes mutation is forbidden. Commit the desired state to Git and let Argo CD reconcile it.' >&2
+            exit 1
+          fi

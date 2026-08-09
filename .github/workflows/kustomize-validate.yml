@@ -1,0 +1,20 @@
+name: common-kustomize-validate
+
+on:
+  workflow_call:
+    inputs:
+      directory:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: imranismail/setup-kustomize@v2
+      - name: Render manifests
+        run: kustomize build "${{ inputs.directory }}" >/dev/null
