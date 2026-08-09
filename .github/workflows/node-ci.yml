@@ -1,0 +1,51 @@
+name: common-node-ci
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        type: string
+        required: false
+        default: '22.x'
+      working-directory:
+        type: string
+        required: false
+        default: .
+      install-command:
+        type: string
+        required: false
+        default: npm ci --no-fund --no-audit
+      verify-command:
+        type: string
+        required: false
+        default: npm test
+      runner:
+        type: string
+        required: false
+        default: ubuntu-latest
+      timeout-minutes:
+        type: number
+        required: false
+        default: 20
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ${{ inputs.runner }}
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: npm
+          cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
+      - name: Install locked dependencies
+        run: ${{ inputs.install-command }}
+      - name: Run repository verification
+        run: ${{ inputs.verify-command }}
