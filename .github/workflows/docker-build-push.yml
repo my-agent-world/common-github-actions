@@ -47,7 +47,10 @@ jobs:
         with:
           buildkitd-config-inline: ${{ inputs.registry-insecure && format('[registry."{0}"]\n  http = true\n  insecure = true', inputs.registry) || '' }}
       - uses: docker/login-action@v3
-        if: secrets.registry_username != '' && secrets.registry_password != ''
+        env:
+          REGISTRY_USERNAME: ${{ secrets.registry_username }}
+          REGISTRY_PASSWORD: ${{ secrets.registry_password }}
+        if: env.REGISTRY_USERNAME != '' && env.REGISTRY_PASSWORD != ''
         with:
           registry: ${{ inputs.registry }}
           username: ${{ secrets.registry_username }}
