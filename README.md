@@ -15,6 +15,7 @@ Callers must pin this repository to a release tag or commit SHA, never a moving 
 
 - `docker-build-push.yml`: BuildKit container build and registry push.
 - `npm-publish.yml`: Verify and publish an npm package on a release.
+- `npm-release.yml`: Run a standardized locked-install, verification, and release flow on a caller-selected trigger.
 - `kustomize-validate.yml`: Render Kustomize without cluster access.
 - `node-ci.yml`: Install locked Node dependencies and run one repository verification command.
 - `gitops-policy.yml`: Reject direct Kubernetes mutation commands in workflows.
