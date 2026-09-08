@@ -79,11 +79,26 @@ jobs:
         env:
           REGISTRY_USERNAME: ${{ secrets.registry_username }}
           REGISTRY_PASSWORD: ${{ secrets.registry_password }}
-        if: env.REGISTRY_USERNAME != '' && env.REGISTRY_PASSWORD != ''
+        if: inputs.registry-insecure != true && env.REGISTRY_USERNAME != '' && env.REGISTRY_PASSWORD != ''
         with:
           registry: ${{ inputs.registry }}
           username: ${{ secrets.registry_username }}
           password: ${{ secrets.registry_password }}
+      - name: Configure internal registry credentials for BuildKit
+        if: inputs.registry-insecure == true
+        shell: bash
+        env:
+          REGISTRY: ${{ inputs.registry }}
+          REGISTRY_USERNAME: ${{ secrets.registry_username }}
+          REGISTRY_PASSWORD: ${{ secrets.registry_password }}
+        run: |
+          if [[ -z "$REGISTRY_USERNAME" || -z "$REGISTRY_PASSWORD" ]]; then
+            exit 0
+          fi
+          install -d -m 0700 "$HOME/.docker"
+          auth="$(printf '%s:%s' "$REGISTRY_USERNAME" "$REGISTRY_PASSWORD" | base64 | tr -d '\n')"
+          printf '{"auths":{"%s":{"auth":"%s"}}}\n' "$REGISTRY" "$auth" > "$HOME/.docker/config.json"
+          chmod 0600 "$HOME/.docker/config.json"
       - uses: docker/build-push-action@v6
         with:
           context: ${{ inputs.context }}
